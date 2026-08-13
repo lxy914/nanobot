@@ -1,4 +1,5 @@
 import asyncio
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -6,8 +7,10 @@ from unittest.mock import MagicMock
 import pytest
 
 from nanobot.agent.loop import AgentLoop
+from nanobot.agent.tools.registry import ToolRegistry
 from nanobot.bus.queue import MessageBus
 from nanobot.bus.runtime_events import RuntimeModelChanged
+from nanobot.config.errors import ConfigLoadError
 from nanobot.config.loader import save_config
 from nanobot.config.schema import Config, ModelPresetConfig
 from nanobot.providers.base import GenerationSettings
@@ -125,6 +128,24 @@ def test_llm_runtime_surfaces_invalidated_config_errors(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="invalid config"):
         loop.llm_runtime()
+
+
+def test_provider_snapshot_missing_env_reports_explicit_config_path(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    name = "NANOBOT_TEST_REFRESH_MISSING_KEY"
+    monkeypatch.delenv(name, raising=False)
+    config_path = tmp_path / "custom.json"
+    config_path.write_text(
+        json.dumps({"providers": {"openrouter": {"apiKey": f"${{{name}}}"}}}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ConfigLoadError) as exc_info:
+        load_provider_snapshot(config_path)
+
+    assert exc_info.value.path == config_path
 
 
 def test_same_snapshot_default_clears_preset_and_publishes_update(tmp_path: Path) -> None:
@@ -292,7 +313,11 @@ def test_settings_context_window_refreshes_runtime_state(
     def loader(*, preset_name: str | None = None) -> ProviderSnapshot:
         return load_provider_snapshot(config_path, preset_name=preset_name)
 
-    loop = AgentLoop.from_config(config, provider_snapshot_loader=loader)
+    loop = AgentLoop.from_config(
+        config,
+        tool_registry=ToolRegistry(),
+        provider_snapshot_loader=loader,
+    )
 
     payload = update_agent_settings({"context_window_tokens": ["262144"]})
     loop.runtime_resolver.invalidate()

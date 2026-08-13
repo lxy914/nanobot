@@ -3,8 +3,6 @@
   <img alt="nanobot README cover" src="./images/readme-cover-light.svg">
 </picture>
 
-# nanobot
-
 <div align="center">
   <p>
     <a href="https://nanobot.wiki/docs/latest/getting-started/nanobot-overview">English</a> |
@@ -34,6 +32,8 @@
   </p>
 </div>
 
+# nanobot
+
 🐈 **nanobot** is an ultra-lightweight, open-source, self-hosted personal AI agent framework written in Python. It runs in a WebUI, terminal, or chat apps and combines tools, long-term memory, MCP integrations, model routing, multi-agent delegation, scheduled automation, and an OpenAI-compatible API in a small, readable core.
 
 ## Start Here
@@ -46,7 +46,7 @@
 | Connect Telegram, Discord, WeChat, Slack, Email, Mattermost, or another chat app | [Chat Apps](./docs/chat-apps.md) |
 | Configure providers, fallback models, Langfuse, MCP, web tools, or security | [Docs](./docs/README.md) and [Configuration](./docs/configuration.md) |
 | Understand or extend the internals | [Architecture](./docs/architecture.md) and [Development](./docs/development.md) |
-| Deploy to the cloud or keep nanobot running as a service | [Deployment](./docs/deployment.md), including [one-click Render setup](./docs/deployment.md#render) |
+| Deploy to the cloud or keep nanobot running as a service | [Deployment](./docs/deployment.md) |
 
 ## What can nanobot do?
 
@@ -223,9 +223,25 @@ If nanobot worked for you, a star on GitHub is the simplest way to support the p
 - Want to run nanobot in chat apps like Telegram, Discord, WeChat or Feishu? See [Chat Apps](./docs/chat-apps.md)
 - Want Docker or Linux service deployment? See [Deployment](./docs/deployment.md)
 
+<a id="deploy-to-render"></a>
+
+## ☁️ Deploy
+
+**Render — one click**
+
+Deploy nanobot's gateway and bundled WebUI from the repository's ready-to-use Blueprint:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/HKUDS/nanobot)
+
+Render will ask for `ANTHROPIC_API_KEY` and a private `NANOBOT_WEB_TOKEN`, then provision persistent storage for sessions, memory, and WebUI history. Persistent disks require a paid Render service.
+
+**Self-host**
+
+Prefer your own infrastructure? Follow the [deployment guide](./docs/deployment.md) for Docker, Docker Compose, Linux services, and macOS LaunchAgent setup.
+
 ## 🌐 WebUI
 
-The WebUI ships **inside the published wheel** with no separate frontend build. It is the browser workbench for persistent topics, visible agent activity, workspace controls, Apps, Skills, Automations, and settings.
+The WebUI ships **inside the published wheel** with no separate frontend build. It is the browser workbench for persistent topics, temporary chats, visible agent activity, workspace controls, Apps, Skills, Automations, and settings.
 
 <p align="center">
   <img src="images/nanobot_webui.png" alt="nanobot webui preview" width="900">
@@ -234,9 +250,10 @@ The WebUI ships **inside the published wheel** with no separate frontend build. 
 Use it to:
 
 - keep separate topics for different tasks and projects;
+- use temporary chats when a conversation should not be saved to history or memory;
 - inspect reasoning, tool calls, file edits, diffs, command output, and generated artifacts;
 - switch models and workspaces without leaving the conversation;
-- configure providers, chat channels, Apps, Skills, and Automations from one place.
+- configure providers and chat channels, connect Apps, discover Skills, and manage Automations from one place.
 
 See the [WebUI guide](./docs/webui.md) for LAN access, background operation, workspace controls, and the full feature tour. Working on the frontend itself? Use [`webui/README.md`](./webui/README.md).
 
